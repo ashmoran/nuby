@@ -20,8 +20,8 @@ module Nuby
         # GSTORE = 25;  # store in global memory
         PRINT = 27;  # print stack top
         NIL   = 29;  # push null onto stack
-        # POP    = 30;  # throw away top of stack
-        HALT   = 31;
+        POP   = 30;  # throw away top of stack
+        HALT  = 31;
       end
     end
 
@@ -77,6 +77,8 @@ module Nuby
             @output_io.puts(@operands.pop)
           when INSTR::NIL
             @operands.push(nil)
+          when INSTR::POP
+            @operands.pop
           when INSTR::HALT
             break
           else

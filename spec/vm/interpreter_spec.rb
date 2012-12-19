@@ -152,6 +152,11 @@ module Nuby
         end
       end
 
+      describe "pop" do
+        let(:fixcode) { [ :const, 100, :const, 200, :pop, :print ] }
+        specify { expect(output).to be == "100" }
+      end
+
       describe "halt" do
         let(:fixcode) { [ :const, 100, :print, :halt, :const, 200, :print ] }
         specify { expect(output).to be == "100" }
