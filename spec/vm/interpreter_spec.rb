@@ -138,6 +138,20 @@ module Nuby
         specify { expect(output).to be == "100\n200" }
       end
 
+      describe "nil" do
+        describe "printing" do
+          let(:fixcode) { [ :nil, :print ] }
+          specify { expect(output).to be == "" }
+        end
+
+        describe "branching" do
+          let(:fixcode) {
+            [ :nil, :const, 7, :brf, :const, 100, :print, :const, 200, :print ]
+          }
+          specify { expect(output).to be == "200" }
+        end
+      end
+
       describe "halt" do
         let(:fixcode) { [ :const, 100, :print, :halt, :const, 200, :print ] }
         specify { expect(output).to be == "100" }

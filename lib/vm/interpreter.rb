@@ -18,8 +18,8 @@ module Nuby
         # GLOAD  = 22;  # load from global memory
         # STORE  = 24;  # storein local context
         # GSTORE = 25;  # store in global memory
-        PRINT  = 27;  # print stack top
-        # NULL   = 29;  # push null onto stack
+        PRINT = 27;  # print stack top
+        NIL   = 29;  # push null onto stack
         # POP    = 30;  # throw away top of stack
         HALT   = 31;
       end
@@ -75,6 +75,8 @@ module Nuby
             ip += 1
           when INSTR::PRINT
             @output_io.puts(@operands.pop)
+          when INSTR::NIL
+            @operands.push(nil)
           when INSTR::HALT
             break
           else
