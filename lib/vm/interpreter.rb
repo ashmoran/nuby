@@ -21,7 +21,7 @@ module Nuby
         PRINT  = 27;  # print stack top
         # NULL   = 29;  # push null onto stack
         # POP    = 30;  # throw away top of stack
-        # HALT   = 31;
+        HALT   = 31;
       end
     end
 
@@ -75,6 +75,8 @@ module Nuby
             ip += 1
           when INSTR::PRINT
             @output_io.puts(@operands.pop)
+          when INSTR::HALT
+            break
           else
             raise "Unknown instruction code: #{instruction}"
           end
