@@ -25,52 +25,54 @@ module Nuby
         interpreter.exec
       end
 
-      describe "iadd" do
-        let(:fixcode) { [ :iconst, 1, :iconst, 2, :iadd, :print ] }
-        specify { expect(output).to be == "3" }
-      end
-
-      describe "isub" do
-        let(:fixcode) { [ :iconst, 150, :iconst, 25, :isub, :print ] }
-        specify { expect(output).to be == "125" }
-      end
-
-      describe "imul" do
-        let(:fixcode) { [ :iconst, 7, :iconst, 8, :imul, :print ] }
-        specify { expect(output).to be == "56" }
-      end
-
-      describe "ilt" do
-        context "a < b" do
-          let(:fixcode) { [ :iconst, 29, :iconst, 30, :ilt, :print ] }
-          specify { expect(output).to be == "true" }
+      describe "integer operations" do
+        describe "iadd" do
+          let(:fixcode) { [ :iconst, 1, :iconst, 2, :iadd, :print ] }
+          specify { expect(output).to be == "3" }
         end
 
-        context "a = b" do
-          let(:fixcode) { [ :iconst, 30, :iconst, 30, :ilt, :print ] }
-          specify { expect(output).to be == "false" }
+        describe "isub" do
+          let(:fixcode) { [ :iconst, 150, :iconst, 25, :isub, :print ] }
+          specify { expect(output).to be == "125" }
         end
 
-        context "a > b" do
-          let(:fixcode) { [ :iconst, 31, :iconst, 30, :ilt, :print ] }
-          specify { expect(output).to be == "false" }
-        end
-      end
-
-      describe "ieq" do
-        context "a < b" do
-          let(:fixcode) { [ :iconst, 29, :iconst, 30, :ieq, :print ] }
-          specify { expect(output).to be == "false" }
+        describe "imul" do
+          let(:fixcode) { [ :iconst, 7, :iconst, 8, :imul, :print ] }
+          specify { expect(output).to be == "56" }
         end
 
-        context "a = b" do
-          let(:fixcode) { [ :iconst, 30, :iconst, 30, :ieq, :print ] }
-          specify { expect(output).to be == "true" }
+        describe "ilt" do
+          context "a < b" do
+            let(:fixcode) { [ :iconst, 29, :iconst, 30, :ilt, :print ] }
+            specify { expect(output).to be == "true" }
+          end
+
+          context "a = b" do
+            let(:fixcode) { [ :iconst, 30, :iconst, 30, :ilt, :print ] }
+            specify { expect(output).to be == "false" }
+          end
+
+          context "a > b" do
+            let(:fixcode) { [ :iconst, 31, :iconst, 30, :ilt, :print ] }
+            specify { expect(output).to be == "false" }
+          end
         end
 
-        context "a > b" do
-          let(:fixcode) { [ :iconst, 31, :iconst, 30, :ieq, :print ] }
-          specify { expect(output).to be == "false" }
+        describe "ieq" do
+          context "a < b" do
+            let(:fixcode) { [ :iconst, 29, :iconst, 30, :ieq, :print ] }
+            specify { expect(output).to be == "false" }
+          end
+
+          context "a = b" do
+            let(:fixcode) { [ :iconst, 30, :iconst, 30, :ieq, :print ] }
+            specify { expect(output).to be == "true" }
+          end
+
+          context "a > b" do
+            let(:fixcode) { [ :iconst, 31, :iconst, 30, :ieq, :print ] }
+            specify { expect(output).to be == "false" }
+          end
         end
       end
 
