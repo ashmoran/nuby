@@ -1,41 +1,43 @@
 module Nuby
   module VM
-    module FixcodeDefinition
-      INSTR_IADD   = 1;   # int add
-      INSTR_ISUB   = 2;
-      INSTR_IMUL   = 3;
-      INSTR_ILT    = 4;   # int less than
-      INSTR_IEQ    = 5;   # int equal
-      # INSTR_FADD   = 6;   # float add
-      # INSTR_FSUB   = 7;
-      # INSTR_FMUL   = 8;
-      # INSTR_FLT    = 9;   # float less than
-      # INSTR_FEQ    = 10;
-      # INSTR_ITOF   = 11;  # int to float
-      # INSTR_CALL   = 12;
-      # INSTR_RET    = 13;  # return with/without value
-      # INSTR_BR     = 14;  # branch
-      # INSTR_BRT    = 15;  # branch if true
-      # INSTR_BRF    = 16;  # branch if true
-      # INSTR_CCONST = 17;  # push constant char
-      INSTR_ICONST = 18;  # push constant integer
-      # INSTR_FCONST = 19;  # push constant float
-      # INSTR_SCONST = 20;  # push constant string
-      # INSTR_LOAD   = 21;  # load from local context
-      # INSTR_GLOAD  = 22;  # load from global memory
-      # INSTR_FLOAD  = 23;  # field load
-      # INSTR_STORE  = 24;  # storein local context
-      # INSTR_GSTORE = 25;  # store in global memory
-      # INSTR_FSTORE = 26;  # field store
-      INSTR_PRINT  = 27;  # print stack top
-      # INSTR_STRUCT = 28;  # push new struct on stack
-      # INSTR_NULL   = 29;  # push null onto stack
-      # INSTR_POP    = 30;  # throw away top of stack
-      # INSTR_HALT   = 31;
+    module Fixcode
+      module INSTR
+        IADD   = 1;   # int add
+        ISUB   = 2;
+        IMUL   = 3;
+        ILT    = 4;   # int less than
+        IEQ    = 5;   # int equal
+        # FADD   = 6;   # float add
+        # FSUB   = 7;
+        # FMUL   = 8;
+        # FLT    = 9;   # float less than
+        # FEQ    = 10;
+        # ITOF   = 11;  # int to float
+        # CALL   = 12;
+        # RET    = 13;  # return with/without value
+        # BR     = 14;  # branch
+        # BRT    = 15;  # branch if true
+        # BRF    = 16;  # branch if true
+        # CCONST = 17;  # push constant char
+        ICONST = 18;  # push constant integer
+        # FCONST = 19;  # push constant float
+        # SCONST = 20;  # push constant string
+        # LOAD   = 21;  # load from local context
+        # GLOAD  = 22;  # load from global memory
+        # FLOAD  = 23;  # field load
+        # STORE  = 24;  # storein local context
+        # GSTORE = 25;  # store in global memory
+        # FSTORE = 26;  # field store
+        PRINT  = 27;  # print stack top
+        # STRUCT = 28;  # push new struct on stack
+        # NULL   = 29;  # push null onto stack
+        # POP    = 30;  # throw away top of stack
+        # HALT   = 31;
+      end
     end
 
     class Interpreter
-      include FixcodeDefinition
+      include Fixcode
 
       def initialize(options)
         @code       = options[:fixcode]
@@ -56,25 +58,25 @@ module Nuby
           ip += 1
 
           case instruction
-          when INSTR_IADD
+          when INSTR::IADD
             left, right = @operands.pop(2)
             @operands.push(left + right)
-          when INSTR_ISUB
+          when INSTR::ISUB
             left, right = @operands.pop(2)
             @operands.push(left - right)
-          when INSTR_IMUL
+          when INSTR::IMUL
             left, right = @operands.pop(2)
             @operands.push(left * right)
-          when INSTR_ILT
+          when INSTR::ILT
             left, right = @operands.pop(2)
             @operands.push(left < right)
-          when INSTR_IEQ
+          when INSTR::IEQ
             left, right = @operands.pop(2)
             @operands.push(left == right)
-          when INSTR_ICONST
+          when INSTR::ICONST
             @operands.push(@code[ip])
             ip += 1
-          when INSTR_PRINT
+          when INSTR::PRINT
             @output_io.puts(@operands.pop)
             ip += 1
           else

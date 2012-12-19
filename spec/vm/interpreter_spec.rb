@@ -11,102 +11,72 @@ module Nuby
         output_io.read.chomp
       end
 
-      subject(:interpreter) {
-        Interpreter.new(fixcode: fixcode, output_io: output_io)
+      let(:compiled_fixcode) {
+        fixcode.map { |code|
+          code.is_a?(Symbol) ? Fixcode::INSTR.const_get(code.to_s.upcase) : code
+        }
       }
 
-      describe "iadd" do
-        let(:fixcode) { [ 18, 1, 18, 2, 1, 27 ] }
+      subject(:interpreter) {
+        Interpreter.new(fixcode: compiled_fixcode, output_io: output_io)
+      }
 
-        specify {
-          interpreter.exec
-          expect(output).to be == "3"
-        }
+      before(:each) do
+        interpreter.exec
+      end
+
+      describe "iadd" do
+        let(:fixcode) { [ :iconst, 1, :iconst, 2, :iadd, :print ] }
+        specify { expect(output).to be == "3" }
       end
 
       describe "isub" do
-        let(:fixcode) { [ 18, 150, 18, 25, 2, 27 ] }
-
-        specify {
-          interpreter.exec
-          expect(output).to be == "125"
-        }
+        let(:fixcode) { [ :iconst, 150, :iconst, 25, :isub, :print ] }
+        specify { expect(output).to be == "125" }
       end
 
       describe "imul" do
-        let(:fixcode) { [ 18, 7, 18, 8, 3, 27 ] }
-
-        specify {
-          interpreter.exec
-          expect(output).to be == "56"
-        }
+        let(:fixcode) { [ :iconst, 7, :iconst, 8, :imul, :print ] }
+        specify { expect(output).to be == "56" }
       end
 
       describe "ilt" do
         context "a < b" do
-          let(:fixcode) { [ 18, 29, 18, 30, 4, 27 ] }
-
-          specify {
-            interpreter.exec
-            expect(output).to be == "true"
-          }
+          let(:fixcode) { [ :iconst, 29, :iconst, 30, :ilt, :print ] }
+          specify { expect(output).to be == "true" }
         end
 
         context "a = b" do
-          let(:fixcode) { [ 18, 30, 18, 30, 4, 27 ] }
-
-          specify {
-            interpreter.exec
-            expect(output).to be == "false"
-          }
+          let(:fixcode) { [ :iconst, 30, :iconst, 30, :ilt, :print ] }
+          specify { expect(output).to be == "false" }
         end
 
         context "a > b" do
-          let(:fixcode) { [ 18, 31, 18, 30, 4, 27 ] }
-
-          specify {
-            interpreter.exec
-            expect(output).to be == "false"
-          }
+          let(:fixcode) { [ :iconst, 31, :iconst, 30, :ilt, :print ] }
+          specify { expect(output).to be == "false" }
         end
       end
 
       describe "ieq" do
         context "a < b" do
-          let(:fixcode) { [ 18, 29, 18, 30, 5, 27 ] }
-
-          specify {
-            interpreter.exec
-            expect(output).to be == "false"
-          }
+          let(:fixcode) { [ :iconst, 29, :iconst, 30, :ieq, :print ] }
+          specify { expect(output).to be == "false" }
         end
 
         context "a = b" do
-          let(:fixcode) { [ 18, 30, 18, 30, 5, 27 ] }
-
-          specify {
-            interpreter.exec
-            expect(output).to be == "true"
-          }
+          let(:fixcode) { [ :iconst, 30, :iconst, 30, :ieq, :print ] }
+          specify { expect(output).to be == "true" }
         end
 
         context "a > b" do
-          let(:fixcode) { [ 18, 31, 18, 30, 5, 27 ] }
-
-          specify {
-            interpreter.exec
-            expect(output).to be == "false"
-          }
+          let(:fixcode) { [ :iconst, 31, :iconst, 30, :ieq, :print ] }
+          specify { expect(output).to be == "false" }
         end
       end
 
       describe "print" do
-        let(:fixcode) { [ 18, 123, 27 ] }
-
-        specify {
-          interpreter.exec
-          expect(output).to be == "123"
-        }
+        let(:fixcode) { [ :iconst, 123, :print ] }
+        specify { expect(output).to be == "123" }
       end
     end
   end
