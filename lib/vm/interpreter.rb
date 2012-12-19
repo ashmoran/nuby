@@ -2,7 +2,7 @@ module Nuby
   module VM
     module FixcodeDefinition
       INSTR_IADD   = 1;   # int add
-      # INSTR_ISUB   = 2;
+      INSTR_ISUB   = 2;
       # INSTR_IMUL   = 3;
       # INSTR_ILT    = 4;   # int less than
       # INSTR_IEQ    = 5;   # int equal
@@ -59,6 +59,9 @@ module Nuby
           when INSTR_IADD
             left, right = @operands.pop(2)
             @operands.push(left + right)
+          when INSTR_ISUB
+            left, right = @operands.pop(2)
+            @operands.push(left - right)
           when INSTR_ICONST
             @operands.push(@code[ip])
             ip += 1
