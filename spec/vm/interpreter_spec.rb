@@ -33,6 +33,15 @@ module Nuby
         }
       end
 
+      describe "isub" do
+        let(:fixcode) { [ 18, 7, 18, 8, 3, 27 ] }
+
+        specify {
+          interpreter.exec
+          expect(output).to be == "56"
+        }
+      end
+
       describe "print" do
         let(:fixcode) { [ 18, 123, 27 ] }
 
