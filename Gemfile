@@ -3,6 +3,8 @@ source 'http://rubygems.org'
 gem 'facets'
 
 group :development do
+	gem 'rake'
+
 	gem 'guard'
 	gem 'listen'
 	gem 'rb-fsevent'
