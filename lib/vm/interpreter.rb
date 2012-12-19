@@ -2,26 +2,26 @@ module Nuby
   module VM
     module Fixcode
       module INSTR
-        ADD   = 1;   # int add
-        SUB   = 2;
-        MUL   = 3;
-        LT    = 4;   # int less than
-        EQ    = 5;   # int equal
+        ADD   = 1;  # add
+        SUB   = 2;  # subtract
+        MUL   = 3;  # multiply
+        LT    = 4;  # less than
+        EQ    = 5;  # equal to
         # CALL   = 12;
         # RET    = 13;  # return with/without value
-        BR    = 14;  # branch
-        BRT   = 15;  # branch if true
-        BRF   = 16;  # branch if true
-        CONST = 18;  # push constant integer
+        BR    = 14; # branch
+        BRT   = 15; # branch if true
+        BRF   = 16; # branch if false
+        CONST = 18; # push constant
         # SCONST = 20;  # push constant string
         # LOAD   = 21;  # load from local context
         # GLOAD  = 22;  # load from global memory
         # STORE  = 24;  # storein local context
         # GSTORE = 25;  # store in global memory
-        PRINT = 27;  # print stack top
-        NIL   = 29;  # push null onto stack
-        POP   = 30;  # throw away top of stack
-        HALT  = 31;
+        PRINT = 27; # print stack top
+        NIL   = 29; # push null onto stack
+        POP   = 30; # throw away top of stack
+        HALT  = 31; # terminate the vm
       end
     end
 
