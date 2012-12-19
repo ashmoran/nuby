@@ -25,6 +25,12 @@ module Nuby
       end
     end
 
+    # A simple stack-based "bytecode" interpereter. The machine code it
+    # processes is called "fixcode" because it's not really bytecode, it's
+    # an array of Fixnums (and Nils and ...). I decided to break away from
+    # the strict bytecode in the book example because of the extra overhead
+    # of doing low-level byte manipulation in Ruby. This VM is definitely
+    # aimed at a more Ruby-like language.
     class Interpreter
       include Fixcode
 
