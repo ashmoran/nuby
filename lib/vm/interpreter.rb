@@ -10,7 +10,7 @@ module Nuby
         # CALL   = 12;
         # RET    = 13;  # return with/without value
         BR    = 14;  # branch
-        # BRT    = 15;  # branch if true
+        BRT   = 15;  # branch if true
         # BRF    = 16;  # branch if true
         # CCONST = 17;  # push constant char
         CONST = 18;  # push constant integer
@@ -67,14 +67,16 @@ module Nuby
           when INSTR::EQ
             left, right = @operands.pop(2)
             @operands.push(left == right)
+          when INSTR::BR
+            ip = @operands.pop
+          when INSTR::BRT
+            condition, address = @operands.pop(2)
+            ip = address if condition
           when INSTR::CONST
             @operands.push(@code[ip])
             ip += 1
-          when INSTR::BR
-            ip = @operands.pop
           when INSTR::PRINT
             @output_io.puts(@operands.pop)
-            ip += 1
           else
             raise "Unknown instruction code: #{instruction}"
           end

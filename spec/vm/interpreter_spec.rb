@@ -79,9 +79,36 @@ module Nuby
         specify { expect(output).to be == "200" }
       end
 
+      # Not sure what do do about the Rubyism here
+      describe "brt" do
+        let(:fixcode) {
+          [ :const, comparison_operand, :const, 8, :brt, :const, 100, :print, :const, 200, :print ]
+        }
+
+        context "operand true" do
+          let(:comparison_operand) { true }
+          specify { expect(output).to be == "200" }
+        end
+
+        context "operand truthy" do
+          let(:comparison_operand) { 123 }
+          specify { expect(output).to be == "200" }
+        end
+
+        context "operand false" do
+          let(:comparison_operand) { false }
+          specify { expect(output).to be == "100\n200" }
+        end
+
+        context "operand nil" do
+          let(:comparison_operand) { nil }
+          specify { expect(output).to be == "100\n200" }
+        end
+      end
+
       describe "print" do
-        let(:fixcode) { [ :const, 123, :print ] }
-        specify { expect(output).to be == "123" }
+        let(:fixcode) { [ :const, 100, :print, :const, 200, :print ] }
+        specify { expect(output).to be == "100\n200" }
       end
     end
   end
