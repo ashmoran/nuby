@@ -5,7 +5,7 @@ module Nuby
       INSTR_ISUB   = 2;
       INSTR_IMUL   = 3;
       INSTR_ILT    = 4;   # int less than
-      # INSTR_IEQ    = 5;   # int equal
+      INSTR_IEQ    = 5;   # int equal
       # INSTR_FADD   = 6;   # float add
       # INSTR_FSUB   = 7;
       # INSTR_FMUL   = 8;
@@ -68,6 +68,9 @@ module Nuby
           when INSTR_ILT
             left, right = @operands.pop(2)
             @operands.push(left < right)
+          when INSTR_IEQ
+            left, right = @operands.pop(2)
+            @operands.push(left == right)
           when INSTR_ICONST
             @operands.push(@code[ip])
             ip += 1

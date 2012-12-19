@@ -71,6 +71,35 @@ module Nuby
         end
       end
 
+      describe "ieq" do
+        context "a < b" do
+          let(:fixcode) { [ 18, 29, 18, 30, 5, 27 ] }
+
+          specify {
+            interpreter.exec
+            expect(output).to be == "false"
+          }
+        end
+
+        context "a = b" do
+          let(:fixcode) { [ 18, 30, 18, 30, 5, 27 ] }
+
+          specify {
+            interpreter.exec
+            expect(output).to be == "true"
+          }
+        end
+
+        context "a > b" do
+          let(:fixcode) { [ 18, 31, 18, 30, 5, 27 ] }
+
+          specify {
+            interpreter.exec
+            expect(output).to be == "false"
+          }
+        end
+      end
+
       describe "print" do
         let(:fixcode) { [ 18, 123, 27 ] }
 
