@@ -11,7 +11,7 @@ module Nuby
         # RET    = 13;  # return with/without value
         BR    = 14;  # branch
         BRT   = 15;  # branch if true
-        # BRF    = 16;  # branch if true
+        BRF    = 16;  # branch if true
         # CCONST = 17;  # push constant char
         CONST = 18;  # push constant integer
         # FCONST = 19;  # push constant float
@@ -72,6 +72,9 @@ module Nuby
           when INSTR::BRT
             condition, address = @operands.pop(2)
             ip = address if condition
+          when INSTR::BRF
+            condition, address = @operands.pop(2)
+            ip = address unless condition
           when INSTR::CONST
             @operands.push(@code[ip])
             ip += 1
