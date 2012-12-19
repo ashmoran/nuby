@@ -11,7 +11,7 @@ module Nuby
         # RET    = 13;  # return with/without value
         BR    = 14;  # branch
         BRT   = 15;  # branch if true
-        BRF    = 16;  # branch if true
+        BRF   = 16;  # branch if true
         CONST = 18;  # push constant integer
         # SCONST = 20;  # push constant string
         # LOAD   = 21;  # load from local context
