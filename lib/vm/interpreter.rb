@@ -2,24 +2,18 @@ module Nuby
   module VM
     module Fixcode
       module INSTR
-        IADD   = 1;   # int add
-        ISUB   = 2;
-        IMUL   = 3;
-        ILT    = 4;   # int less than
-        IEQ    = 5;   # int equal
-        # FADD   = 6;   # float add
-        # FSUB   = 7;
-        # FMUL   = 8;
-        # FLT    = 9;   # float less than
-        # FEQ    = 10;
-        # ITOF   = 11;  # int to float
+        ADD   = 1;   # int add
+        SUB   = 2;
+        MUL   = 3;
+        LT    = 4;   # int less than
+        EQ    = 5;   # int equal
         # CALL   = 12;
         # RET    = 13;  # return with/without value
         # BR     = 14;  # branch
         # BRT    = 15;  # branch if true
         # BRF    = 16;  # branch if true
         # CCONST = 17;  # push constant char
-        ICONST = 18;  # push constant integer
+        CONST = 18;  # push constant integer
         # FCONST = 19;  # push constant float
         # SCONST = 20;  # push constant string
         # LOAD   = 21;  # load from local context
@@ -58,22 +52,22 @@ module Nuby
           ip += 1
 
           case instruction
-          when INSTR::IADD
+          when INSTR::ADD
             left, right = @operands.pop(2)
             @operands.push(left + right)
-          when INSTR::ISUB
+          when INSTR::SUB
             left, right = @operands.pop(2)
             @operands.push(left - right)
-          when INSTR::IMUL
+          when INSTR::MUL
             left, right = @operands.pop(2)
             @operands.push(left * right)
-          when INSTR::ILT
+          when INSTR::LT
             left, right = @operands.pop(2)
             @operands.push(left < right)
-          when INSTR::IEQ
+          when INSTR::EQ
             left, right = @operands.pop(2)
             @operands.push(left == right)
-          when INSTR::ICONST
+          when INSTR::CONST
             @operands.push(@code[ip])
             ip += 1
           when INSTR::PRINT
