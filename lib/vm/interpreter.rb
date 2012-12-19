@@ -9,7 +9,7 @@ module Nuby
         EQ    = 5;   # int equal
         # CALL   = 12;
         # RET    = 13;  # return with/without value
-        # BR     = 14;  # branch
+        BR    = 14;  # branch
         # BRT    = 15;  # branch if true
         # BRF    = 16;  # branch if true
         # CCONST = 17;  # push constant char
@@ -70,6 +70,8 @@ module Nuby
           when INSTR::CONST
             @operands.push(@code[ip])
             ip += 1
+          when INSTR::BR
+            ip = @operands.pop
           when INSTR::PRINT
             @output_io.puts(@operands.pop)
             ip += 1

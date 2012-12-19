@@ -74,6 +74,11 @@ module Nuby
         end
       end
 
+      describe "br" do
+        let(:fixcode) { [ :const, 6, :br, :const, 100, :print, :const, 200, :print ] }
+        specify { expect(output).to be == "200" }
+      end
+
       describe "print" do
         let(:fixcode) { [ :const, 123, :print ] }
         specify { expect(output).to be == "123" }
