@@ -133,6 +133,25 @@ module Nuby
         end
       end
 
+      describe "gload/gstore" do
+        let(:fixcode) {
+          [
+            :const,   100,
+            :gstore,    0,
+            :const,   200,
+            :gstore,    1,
+            :const,   101,
+            :gstore,    0,
+            :gload,     1,
+            :print,
+            :gload,     0,
+            :print
+          ]
+        }
+
+        specify { expect(output).to be == "200\n101" }
+      end
+
       describe "print" do
         let(:fixcode) { [ :const, 100, :print, :const, 200, :print ] }
         specify { expect(output).to be == "100\n200" }
