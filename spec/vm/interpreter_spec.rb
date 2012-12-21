@@ -133,6 +133,35 @@ module Nuby
         end
       end
 
+      describe "load/store" do
+        context "main" do
+          let(:fixcode) {
+            [
+              :const,   100,
+              :store,    0,
+              :const,   200,
+              :store,    1,
+              :const,   101,
+              :store,    0,
+              :load,     1,
+              :print,
+              :load,     0,
+              :print
+            ]
+          }
+
+          specify { expect(output).to be == "200\n101" }
+        end
+
+        context "a call" do
+          specify "TODO"
+        end
+
+        context "a nested call" do
+          specify "TODO"
+        end
+      end
+
       describe "gload/gstore" do
         let(:fixcode) {
           [

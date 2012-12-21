@@ -14,9 +14,9 @@ module Nuby
         BRF   = 16; # branch if false
         CONST = 18; # push constant
         # SCONST = 20;  # push constant string
-        # LOAD   = 21;  # load from local context
+        LOAD   = 21;  # load from local context
         GLOAD  = 22;  # load from global memory
-        # STORE  = 24;  # storein local context
+        STORE  = 24;  # storein local context
         GSTORE = 25;  # store in global memory
         PRINT = 27; # print stack top
         NIL   = 29; # push null onto stack
@@ -39,6 +39,7 @@ module Nuby
         @output_io  = options[:output_io]
 
         @globals    = [ ]
+        @locals     = [ ] # Will be extracted into a stack frame
         @operands   = [ ]
       end
 
@@ -80,8 +81,14 @@ module Nuby
           when INSTR::CONST
             @operands.push(@code[ip])
             ip += 1
+          when INSTR::LOAD
+            @operands.push(@locals[@code[ip]])
+            ip += 1
           when INSTR::GLOAD
             @operands.push(@globals[@code[ip]])
+            ip += 1
+          when INSTR::STORE
+            @locals[@code[ip]] = @operands.pop
             ip += 1
           when INSTR::GSTORE
             @globals[@code[ip]] = @operands.pop
