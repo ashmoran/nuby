@@ -96,27 +96,27 @@ module Nuby
           when :brf
             condition, address = @operands.pop(2)
             ip = address unless condition
-          when :const
-            @operands.push(@code[ip])
+          when :gload
+            @operands.push(@globals[@code[ip]])
+            ip += 1
+          when :gstore
+            @globals[@code[ip]] = @operands.pop
             ip += 1
           when :load
             stack_frame = @call_stack.last
             @operands.push(stack_frame.locals[@code[ip]])
             ip += 1
-          when :gload
-            @operands.push(@globals[@code[ip]])
-            ip += 1
           when :store
             stack_frame = @call_stack.last
             stack_frame.locals[@code[ip]] = @operands.pop
             ip += 1
-          when :gstore
-            @globals[@code[ip]] = @operands.pop
+          when :const
+            @operands.push(@code[ip])
             ip += 1
-          when :print
-            @output_io.puts(@operands.pop)
           when :nil
             @operands.push(nil)
+          when :print
+            @output_io.puts(@operands.pop)
           when :pop
             @operands.pop
           when :halt
