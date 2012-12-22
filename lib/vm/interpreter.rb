@@ -14,6 +14,19 @@ module Nuby
       end
     end
 
+    class StackFrame
+      attr_reader :locals, :return_address
+
+      def initialize(attributes)
+        @locals = attributes.fetch(:locals, [ ])
+        @return_address = attributes.fetch(:return_address)
+      end
+
+      def to_s
+        "<StackFrame: locals=#{@locals.inspect} return_address=#{@return_address}>"
+      end
+    end
+
     # A simple stack-based "bytecode" interpereter. The machine code it
     # processes is called "fixcode" because it's not really bytecode, it's
     # an array of Fixnums (and Nils and ...). I decided to break away from
@@ -22,13 +35,13 @@ module Nuby
     # aimed at a more Ruby-like language.
     class Interpreter
       def initialize(options)
-        @code       = options.fetch(:fixcode)
-        @constants  = options.fetch(:constants, [ ])
-        @output_io  = options.fetch(:output_io)
+        @main      = options.fetch(:main, FunctionSymbol.new(name: "main", address: 0))
+        @code      = options.fetch(:fixcode)
+        @constants = options.fetch(:constants, [ ])
+        @output_io = options.fetch(:output_io)
 
         @globals    = [ ]
         @call_stack = [ ]
-        @locals     = [ ] # Will be extracted into a stack frame
         @operands   = [ ]
       end
 
@@ -37,7 +50,9 @@ module Nuby
       end
 
       def run_cpu
-        ip = 0
+        @call_stack.push(StackFrame.new(return_address: -1))
+
+        ip = @main.address
         instruction = @code[ip]
 
         while ip < @code.length
@@ -61,12 +76,15 @@ module Nuby
             @operands.push(left == right)
           when :call
             function = @constants[@code[ip]]
-            @locals = @operands.pop(function.num_args)
-            @call_stack.push(ip + 1)
+            @call_stack.push(
+              StackFrame.new(
+                locals:         @operands.pop(function.num_args),
+                return_address: ip + 1
+              )
+            )
             ip = function.address
           when :ret
-            # Naively just storing the address for now
-            ip = @call_stack.pop
+            ip = @call_stack.pop.return_address
           when :br
             ip = @operands.pop
           when :brt
@@ -79,13 +97,15 @@ module Nuby
             @operands.push(@code[ip])
             ip += 1
           when :load
-            @operands.push(@locals[@code[ip]])
+            stack_frame = @call_stack.last
+            @operands.push(stack_frame.locals[@code[ip]])
             ip += 1
           when :gload
             @operands.push(@globals[@code[ip]])
             ip += 1
           when :store
-            @locals[@code[ip]] = @operands.pop
+            stack_frame = @call_stack.last
+            stack_frame.locals[@code[ip]] = @operands.pop
             ip += 1
           when :gstore
             @globals[@code[ip]] = @operands.pop

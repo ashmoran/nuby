@@ -13,9 +13,9 @@ module Nuby
 
       subject(:interpreter) {
         Interpreter.new(
-          fixcode: fixcode,
-          constants: constants,
-          output_io: output_io
+          fixcode:    fixcode,
+          constants:  constants,
+          output_io:  output_io
         )
       }
 
@@ -152,14 +152,6 @@ module Nuby
             }
 
             specify { expect(output).to be == "200\n101" }
-          end
-
-          context "a call" do
-            specify "TODO"
-          end
-
-          context "a nested call" do
-            specify "TODO"
           end
         end
 
@@ -315,11 +307,11 @@ module Nuby
             specify { expect(output).to be == "100\n200" }
           end
 
-          context "nested calls", pending: true do
+          context "nested calls" do
             let(:constants) {
               [
                 FunctionSymbol.new(name: "f", address: 7, num_args: 2),
-                FunctionSymbol.new(name: "g", address: 21, num_args: 1)
+                FunctionSymbol.new(name: "g", address: 22, num_args: 1)
               ]
             }
 
