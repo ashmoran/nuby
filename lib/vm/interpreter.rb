@@ -46,87 +46,137 @@ module Nuby
       end
 
       def exec
+        @call_stack.push(StackFrame.new(return_address: -1))
+        @ip = @main.address
         run_cpu
       end
 
       def run_cpu
-        @call_stack.push(StackFrame.new(return_address: -1))
+        catch(:halt) do
+          while @ip < @code.length
+            instruction = @code[@ip]
+            @ip += 1
 
-        ip = @main.address
-        instruction = @code[ip]
-
-        while ip < @code.length
-          ip += 1
-
-          case instruction
-          when :add
-            left, right = @operands.pop(2)
-            @operands.push(left + right)
-          when :sub
-            left, right = @operands.pop(2)
-            @operands.push(left - right)
-          when :mul
-            left, right = @operands.pop(2)
-            @operands.push(left * right)
-          when :div
-            left, right = @operands.pop(2)
-            @operands.push(left / right)
-          when :lt
-            left, right = @operands.pop(2)
-            @operands.push(left < right)
-          when :eq
-            left, right = @operands.pop(2)
-            @operands.push(left == right)
-          when :call
-            function = @constants[@code[ip]]
-            @call_stack.push(
-              StackFrame.new(
-                locals:         @operands.pop(function.num_args),
-                return_address: ip + 1
-              )
-            )
-            ip = function.address
-          when :ret
-            ip = @call_stack.pop.return_address
-          when :br
-            ip = @operands.pop
-          when :brt
-            condition, address = @operands.pop(2)
-            ip = address if condition
-          when :brf
-            condition, address = @operands.pop(2)
-            ip = address unless condition
-          when :gload
-            @operands.push(@globals[@code[ip]])
-            ip += 1
-          when :gstore
-            @globals[@code[ip]] = @operands.pop
-            ip += 1
-          when :load
-            stack_frame = @call_stack.last
-            @operands.push(stack_frame.locals[@code[ip]])
-            ip += 1
-          when :store
-            stack_frame = @call_stack.last
-            stack_frame.locals[@code[ip]] = @operands.pop
-            ip += 1
-          when :const
-            @operands.push(@code[ip])
-            ip += 1
-          when :nil
-            @operands.push(nil)
-          when :print
-            @output_io.puts(@operands.pop)
-          when :pop
-            @operands.pop
-          when :halt
-            break
-          else
-            raise "Unknown instruction code: #{instruction.inspect}"
+            exec_instruction(instruction)
           end
-
-          instruction = @code[ip]
         end
+      end
+
+      private
+
+      def exec_instruction(instruction)
+        instruction_method = :"instr_#{instruction}"
+        if respond_to?(instruction_method)
+          send(instruction_method)
+        else
+          raise "Unknown instruction: #{instruction.inspect}"
+        end
+      end
+
+      def self.instruction(instruction_name, &block)
+        define_method(:"instr_#{instruction_name}", &block)
+      end
+
+      instruction :add do
+        left, right = @operands.pop(2)
+        @operands.push(left + right)
+      end
+
+      instruction :sub do
+        left, right = @operands.pop(2)
+        @operands.push(left - right)
+      end
+
+      instruction :mul do
+        left, right = @operands.pop(2)
+        @operands.push(left * right)
+      end
+
+      instruction :div do
+        left, right = @operands.pop(2)
+        @operands.push(left / right)
+      end
+
+      instruction :lt do
+        left, right = @operands.pop(2)
+        @operands.push(left < right)
+      end
+
+      instruction :eq do
+        left, right = @operands.pop(2)
+        @operands.push(left == right)
+      end
+
+      instruction :call do
+        function = @constants[@code[@ip]]
+        @call_stack.push(
+          StackFrame.new(
+            locals:         @operands.pop(function.num_args),
+            return_address: @ip + 1
+          )
+        )
+        @ip = function.address
+      end
+
+      instruction :ret do
+        @ip = @call_stack.pop.return_address
+      end
+
+      instruction :br do
+        @ip = @operands.pop
+      end
+
+      instruction :brt do
+        condition, address = @operands.pop(2)
+        @ip = address if condition
+      end
+
+      instruction :brf do
+        condition, address = @operands.pop(2)
+        @ip = address unless condition
+      end
+
+      instruction :gload do
+        @operands.push(@globals[@code[@ip]])
+        @ip += 1
+      end
+
+      instruction :gstore do
+        @globals[@code[@ip]] = @operands.pop
+        @ip += 1
+      end
+
+      instruction :load do
+        stack_frame = @call_stack.last
+        @operands.push(stack_frame.locals[@code[@ip]])
+        @ip += 1
+      end
+
+      instruction :store do
+        stack_frame = @call_stack.last
+        stack_frame.locals[@code[@ip]] = @operands.pop
+        @ip += 1
+      end
+
+      instruction :const do
+        @operands.push(@code[@ip])
+        @ip += 1
+      end
+
+      instruction :nil do
+        @operands.push(nil)
+      end
+
+      instruction :print do
+        @output_io.puts(@operands.pop)
+      end
+
+      instruction :pop do
+        @operands.pop
+      end
+
+      instruction :halt do
+        throw :halt
       end
     end
   end
