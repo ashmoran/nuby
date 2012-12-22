@@ -7,8 +7,8 @@ module Nuby
         MUL   = 3;  # multiply
         LT    = 4;  # less than
         EQ    = 5;  # equal to
-        # CALL   = 12;
-        # RET    = 13;  # return with/without value
+        CALL   = 12;
+        RET    = 13;  # return with/without value
         BR    = 14; # branch
         BRT   = 15; # branch if true
         BRF   = 16; # branch if false
@@ -25,6 +25,20 @@ module Nuby
       end
     end
 
+    class FunctionSymbol
+      attr_reader :address, :num_args
+
+      def initialize(attributes)
+        @name     = attributes.fetch(:name)
+        @address  = attributes.fetch(:address)
+        @num_args = attributes.fetch(:num_args, 0)
+      end
+
+      def to_s
+        "<FunctionSymbol: name=#{@name} address=#{@address}> num_args=#{@num_args}"
+      end
+    end
+
     # A simple stack-based "bytecode" interpereter. The machine code it
     # processes is called "fixcode" because it's not really bytecode, it's
     # an array of Fixnums (and Nils and ...). I decided to break away from
@@ -35,10 +49,12 @@ module Nuby
       include Fixcode
 
       def initialize(options)
-        @code       = options[:fixcode]
-        @output_io  = options[:output_io]
+        @code       = options.fetch(:fixcode)
+        @constants  = options.fetch(:constants, [ ])
+        @output_io  = options.fetch(:output_io)
 
         @globals    = [ ]
+        @call_stack = [ ]
         @locals     = [ ] # Will be extracted into a stack frame
         @operands   = [ ]
       end
@@ -70,6 +86,14 @@ module Nuby
           when INSTR::EQ
             left, right = @operands.pop(2)
             @operands.push(left == right)
+          when INSTR::CALL
+            function = @constants[@code[ip]]
+            @locals = @operands.pop(function.num_args)
+            @call_stack.push(ip + 1)
+            ip = function.address
+          when INSTR::RET
+            # Naively just storing the address for now
+            ip = @call_stack.pop
           when INSTR::BR
             ip = @operands.pop
           when INSTR::BRT
