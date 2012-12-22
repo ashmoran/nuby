@@ -1,30 +1,5 @@
 module Nuby
   module VM
-    module Fixcode
-      module INSTR
-        ADD   = 1;  # add
-        SUB   = 2;  # subtract
-        MUL   = 3;  # multiply
-        LT    = 4;  # less than
-        EQ    = 5;  # equal to
-        CALL   = 12;
-        RET    = 13;  # return with/without value
-        BR    = 14; # branch
-        BRT   = 15; # branch if true
-        BRF   = 16; # branch if false
-        CONST = 18; # push constant
-        # SCONST = 20;  # push constant string
-        LOAD   = 21;  # load from local context
-        GLOAD  = 22;  # load from global memory
-        STORE  = 24;  # storein local context
-        GSTORE = 25;  # store in global memory
-        PRINT = 27; # print stack top
-        NIL   = 29; # push null onto stack
-        POP   = 30; # throw away top of stack
-        HALT  = 31; # terminate the vm
-      end
-    end
-
     class FunctionSymbol
       attr_reader :address, :num_args
 
@@ -46,8 +21,6 @@ module Nuby
     # of doing low-level byte manipulation in Ruby. This VM is definitely
     # aimed at a more Ruby-like language.
     class Interpreter
-      include Fixcode
-
       def initialize(options)
         @code       = options.fetch(:fixcode)
         @constants  = options.fetch(:constants, [ ])
@@ -71,62 +44,62 @@ module Nuby
           ip += 1
 
           case instruction
-          when INSTR::ADD
+          when :add
             left, right = @operands.pop(2)
             @operands.push(left + right)
-          when INSTR::SUB
+          when :sub
             left, right = @operands.pop(2)
             @operands.push(left - right)
-          when INSTR::MUL
+          when :mul
             left, right = @operands.pop(2)
             @operands.push(left * right)
-          when INSTR::LT
+          when :lt
             left, right = @operands.pop(2)
             @operands.push(left < right)
-          when INSTR::EQ
+          when :eq
             left, right = @operands.pop(2)
             @operands.push(left == right)
-          when INSTR::CALL
+          when :call
             function = @constants[@code[ip]]
             @locals = @operands.pop(function.num_args)
             @call_stack.push(ip + 1)
             ip = function.address
-          when INSTR::RET
+          when :ret
             # Naively just storing the address for now
             ip = @call_stack.pop
-          when INSTR::BR
+          when :br
             ip = @operands.pop
-          when INSTR::BRT
+          when :brt
             condition, address = @operands.pop(2)
             ip = address if condition
-          when INSTR::BRF
+          when :brf
             condition, address = @operands.pop(2)
             ip = address unless condition
-          when INSTR::CONST
+          when :const
             @operands.push(@code[ip])
             ip += 1
-          when INSTR::LOAD
+          when :load
             @operands.push(@locals[@code[ip]])
             ip += 1
-          when INSTR::GLOAD
+          when :gload
             @operands.push(@globals[@code[ip]])
             ip += 1
-          when INSTR::STORE
+          when :store
             @locals[@code[ip]] = @operands.pop
             ip += 1
-          when INSTR::GSTORE
+          when :gstore
             @globals[@code[ip]] = @operands.pop
             ip += 1
-          when INSTR::PRINT
+          when :print
             @output_io.puts(@operands.pop)
-          when INSTR::NIL
+          when :nil
             @operands.push(nil)
-          when INSTR::POP
+          when :pop
             @operands.pop
-          when INSTR::HALT
+          when :halt
             break
           else
-            raise "Unknown instruction code: #{instruction}"
+            raise "Unknown instruction code: #{instruction.inspect}"
           end
 
           instruction = @code[ip]

@@ -11,15 +11,9 @@ module Nuby
         output_io.read.chomp
       end
 
-      let(:compiled_fixcode) {
-        fixcode.map { |code|
-          code.is_a?(Symbol) ? Fixcode::INSTR.const_get(code.to_s.upcase) : code
-        }
-      }
-
       subject(:interpreter) {
         Interpreter.new(
-          fixcode: compiled_fixcode,
+          fixcode: fixcode,
           constants: constants,
           output_io: output_io
         )
@@ -301,23 +295,59 @@ module Nuby
         end
 
         describe "args" do
-          let(:constants) {
-            [ FunctionSymbol.new(name: "f", address: 6, num_args: 2) ]
-          }
+          context "single call" do
+            let(:constants) {
+              [ FunctionSymbol.new(name: "f", address: 6, num_args: 2) ]
+            }
 
-          let(:fixcode) {
-            [
-              :const, 100,
-              :const, 200,
-              :call, 0,
-              :load, 0,
-              :print,
-              :load, 1,
-              :print
-            ]
-          }
+            let(:fixcode) {
+              [
+                :const, 100,
+                :const, 200,
+                :call, 0,
+                :load, 0,
+                :print,
+                :load, 1,
+                :print
+              ]
+            }
 
-          specify { expect(output).to be == "100\n200" }
+            specify { expect(output).to be == "100\n200" }
+          end
+
+          context "nested calls", pending: true do
+            let(:constants) {
+              [
+                FunctionSymbol.new(name: "f", address: 7, num_args: 2),
+                FunctionSymbol.new(name: "g", address: 21, num_args: 1)
+              ]
+            }
+
+            let(:fixcode) {
+              [
+                :const, 10,
+                :const, 20,
+                :call,   0,
+                :halt,
+                :load,   0, # f()
+                :load,   1,
+                :add,
+                :call,   1,
+                :print,
+                :load,   0,
+                :print,
+                :load,   1,
+                :print,
+                :ret,
+                :load,   0, # g()
+                :const,  4,
+                :mul,
+                :ret
+              ]
+            }
+
+            specify { expect(output).to be == "120\n10\n20" }
+          end
         end
       end
     end
