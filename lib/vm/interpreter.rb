@@ -68,6 +68,9 @@ module Nuby
           when :mul
             left, right = @operands.pop(2)
             @operands.push(left * right)
+          when :div
+            left, right = @operands.pop(2)
+            @operands.push(left / right)
           when :lt
             left, right = @operands.pop(2)
             @operands.push(left < right)

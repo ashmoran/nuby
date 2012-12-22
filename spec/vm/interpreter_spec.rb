@@ -41,6 +41,16 @@ module Nuby
           specify { expect(output).to be == "56" }
         end
 
+        describe "mul" do
+          let(:fixcode) { [ :const, 7, :const, 8, :mul, :print ] }
+          specify { expect(output).to be == "56" }
+        end
+
+        describe "div" do
+          let(:fixcode) { [ :const, 20, :const, 5, :div, :print ] }
+          specify { expect(output).to be == "4" }
+        end
+
         describe "lt" do
           context "a < b" do
             let(:fixcode) { [ :const, 29, :const, 30, :lt, :print ] }
